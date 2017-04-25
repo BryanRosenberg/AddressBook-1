@@ -43,6 +43,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IMatchable.cs" />
+    <Compile Include="Recipe.cs" />
     <Compile Include="Company.cs" />
     <Compile Include="Contact.cs" />
     <Compile Include="MenuOption.cs" />

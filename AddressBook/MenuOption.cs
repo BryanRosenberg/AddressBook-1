@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace AddressBook
+﻿namespace AddressBook
 {
     public enum MenuOption
     {
@@ -10,6 +7,10 @@ namespace AddressBook
         AddCompany,
         ListContacts,
         SearchContacts,
-        RemoveContact
+        RemoveContact,
+        AddRecipe,
+        SearchEverything,
+
+        UPPER_LIMIT
     }
 }

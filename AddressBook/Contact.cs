@@ -1,6 +1,6 @@
 ﻿namespace AddressBook
 {
-    public abstract class Contact
+    public abstract class Contact : IMatchable
     {
         public Contact(string phoneNumber)
         {
