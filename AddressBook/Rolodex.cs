@@ -15,29 +15,29 @@ namespace AddressBook
             // Print a menu
             ShowMenu();
             // Get the user's choice
-            int choice = GetMenuOption();
+            MenuOption choice = GetMenuOption();
             
             // while the user does not want to exit
-            while (choice != 0)
+            while (choice != MenuOption.Exit)
             {
                 // figure out what they want to do
                 // get information
                 // do stuff
                 switch(choice)
                 {
-                    case 1:
+                    case MenuOption.AddPerson:
                         DoAddPerson();
                         break;
-                    case 2:
+                    case MenuOption.AddCompany:
                         DoAddCompany();
                         break;
-                    case 3:
+                    case MenuOption.ListContacts:
                         DoListContacts();
                         break;
-                    case 4:
+                    case MenuOption.SearchContacts:
                         DoSearchContacts();
                         break;
-                    case 5:
+                    case MenuOption.RemoveContact:
                         DoRemoveContact();
                         break;
                 }
@@ -143,7 +143,7 @@ namespace AddressBook
             return input;
         }
 
-        private int GetMenuOption()
+        private MenuOption GetMenuOption()
         {
             string input = Console.ReadLine();
             int choice = int.Parse(input);
@@ -155,7 +155,7 @@ namespace AddressBook
                 choice = int.Parse(input);
             }
 
-            return choice;
+            return (MenuOption)choice;
         }
 
         private void ShowMenu()
