@@ -8,7 +8,12 @@ namespace AddressBook
         public Rolodex()
         {
             _contacts = new List<Contact>();
-            _recipes = new List<Recipe>();
+            _recipes = new Dictionary<RecipeType, List<Recipe>>();
+            
+            // Initializations
+            _recipes.Add(RecipeType.Appetizers, new List<Recipe>()); //Can add only once
+            _recipes[RecipeType.Entrees] = new List<Recipe>(); //Overwrites previous entry
+            _recipes.Add(RecipeType.Desserts, new List<Recipe>()); //Can add only once
         }
 
         public void DoStuff()
@@ -44,6 +49,9 @@ namespace AddressBook
                     case MenuOption.AddRecipe:
                         DoAddRecipe();
                         break;
+                    case MenuOption.ListRecipes:
+                        DoListRecipes();
+                        break;
                     case MenuOption.SearchEverything:
                         DoSearchEverything();
                         break;
@@ -53,13 +61,44 @@ namespace AddressBook
             }
         }
 
+        private void DoListRecipes()
+        {
+            Console.Clear();
+            Console.WriteLine("RECIPES!");
+            foreach (RecipeType recipeType in _recipes.Keys)
+            {
+                Console.WriteLine(recipeType);
+
+                List<Recipe> specificRecipes = _recipes[recipeType];
+                foreach (Recipe recipe in specificRecipes)
+                {
+                    Console.WriteLine($"\t{recipe}");
+                }
+
+                Console.WriteLine();
+            }
+            Console.ReadLine();
+        }
+
         private void DoAddRecipe()
         {
             Console.Clear();
             Console.WriteLine("Please enter your recipe title.");
             string title = GetNonEmptyStringFromUser();
             Recipe recipe = new Recipe(title);
-            _recipes.Add(new Recipe(title));
+
+            Console.WriteLine("What kind of recipe is this?");
+            for (int i = 0; i < (int)RecipeType.UPPER_LIMIT; i += 1)
+            {
+                Console.WriteLine($"{i}. {(RecipeType)i}");
+            }
+            //RecipeType choice = (RecipeType)int.Parse(Console.ReadLine());
+            string input = Console.ReadLine();
+            int num = int.Parse(input);
+            RecipeType choice = (RecipeType)num;
+
+            List<Recipe> specificRecipes = _recipes[choice]; // running list
+            specificRecipes.Add(recipe);
         }
 
         private void DoRemoveContact()
@@ -96,7 +135,9 @@ namespace AddressBook
 
             List<IMatchable> matchables = new List<IMatchable>();
             matchables.AddRange(_contacts);
-            matchables.AddRange(_recipes);
+            matchables.AddRange(_recipes[RecipeType.Appetizers]);
+            matchables.AddRange(_recipes[RecipeType.Entrees]);
+            matchables.AddRange(_recipes[RecipeType.Desserts]);
 
             foreach (IMatchable matcher in matchables)
             {
@@ -182,24 +223,47 @@ namespace AddressBook
             return input;
         }
 
+        private int GetNumberFromUser()
+        {
+            while (true)
+            {
+                try
+                {
+                    string input = Console.ReadLine();
+                    return int.Parse(input);
+                }
+                catch (FormatException)
+                {
+                    Console.WriteLine("You should type a number.");
+                    Console.WriteLine();
+                    Console.Write("What would you like to do? ");
+                }
+                finally
+                {
+                    Console.WriteLine("THIS will always be printed!");
+                }
+            }
+        }
+
         private MenuOption GetMenuOption()
         {
-            string input = Console.ReadLine();
-            int choice = int.Parse(input);
+            int choice = GetNumberFromUser();
 
             while (choice < 0 || choice >= (int)MenuOption.UPPER_LIMIT)
             {
-                Console.WriteLine("That is not valid.");
-                input = Console.ReadLine();
-                choice = int.Parse(input);
+                Console.WriteLine("That is not a valid selection.");
+                Console.WriteLine();
+                Console.Write("What would you like to do? ");
+                choice = GetNumberFromUser();
             }
-
+            
             return (MenuOption)choice;
         }
 
         private void ShowMenu()
         {
             Console.Clear();
+            //Console.WriteLine($"ROLODEX! ({_contacts.Count}) ({_recipes.Count})");
             Console.WriteLine($"ROLODEX! ({_contacts.Count}) ({_recipes.Count})");
             Console.WriteLine("1. Add a person");
             Console.WriteLine("2. Add a company");
@@ -208,7 +272,8 @@ namespace AddressBook
             Console.WriteLine("5. Remove a contact");
             Console.WriteLine("-----------------------");
             Console.WriteLine("6. Add a recipe");
-            Console.WriteLine("7. Search everything!");
+            Console.WriteLine("7. List recipes");
+            Console.WriteLine("8. Search everything!");
             Console.WriteLine();
             Console.WriteLine("0. Exit");
             Console.WriteLine();
@@ -216,6 +281,6 @@ namespace AddressBook
         }
     
         private List<Contact> _contacts;
-        private List<Recipe> _recipes;
+        private Dictionary<RecipeType, List<Recipe>> _recipes;
     }
 }
