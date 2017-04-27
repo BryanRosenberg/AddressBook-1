@@ -1,6 +1,12 @@
 ﻿using System;
 using System.Configuration;
 
+// inside Roledex.cs, 
+// make recipes only go into the datbase.
+// forget the search everything.
+// - add recipes
+// - list recipes
+
 namespace AddressBook
 {
     class Program

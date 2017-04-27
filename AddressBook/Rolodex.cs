@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 
 namespace AddressBook
 {
@@ -61,23 +62,47 @@ namespace AddressBook
             }
         }
 
+
         private void DoListRecipes()
         {
             Console.Clear();
             Console.WriteLine("RECIPES!");
-            foreach (RecipeType recipeType in _recipes.Keys)
+   
+            string connectionString;
+            connectionString = "Server=LOCALHOST;Database=AddressBook;Trusted_Connection=True;";
+            SqlConnection connection;
+            connection = new SqlConnection(connectionString);
+
+            try
             {
-                Console.WriteLine(recipeType);
+                connection.Open();
 
-                List<Recipe> specificRecipes = _recipes[recipeType];
-                foreach (Recipe recipe in specificRecipes)
+                SqlCommand command;
+
+                command = connection.CreateCommand();
+                command.CommandText = $@"
+                    SELECT RecipeType, RecipeTitle 
+                      FROM Recipes 
+                     ORDER 
+                        BY RecipeType, RecipeTitle";
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
                 {
-                    Console.WriteLine($"\t{recipe}");
+                    string type = reader.GetString(0);
+                    string title = reader.GetString(1);
+                    Console.WriteLine($"{type},{title}");
                 }
-
                 Console.WriteLine();
+                Console.WriteLine("Press Enter to return to the menu...");
+                Console.ReadLine();
             }
-            Console.ReadLine();
+            finally
+            {
+                connection.Dispose();
+            }
+
         }
 
         private void DoAddRecipe()
@@ -97,8 +122,32 @@ namespace AddressBook
             int num = int.Parse(input);
             RecipeType choice = (RecipeType)num;
 
-            List<Recipe> specificRecipes = _recipes[choice]; // running list
-            specificRecipes.Add(recipe);
+            string connectionString;
+            connectionString = "Server=LOCALHOST;Database=AddressBook;Trusted_Connection=True;";
+            SqlConnection connection;
+            connection = new SqlConnection(connectionString);
+
+            try
+            {
+                connection.Open();
+
+                SqlCommand command;
+
+                command = connection.CreateCommand();
+                command.CommandText =
+                $@"
+                    INSERT INTO Recipes (RecipeType, RecipeTitle)
+                    VALUES(@RecipeChoice,@RecipeTitle)
+                ";
+
+                command.Parameters.AddWithValue("@RecipeChoice", choice.ToString());
+                command.Parameters.AddWithValue("@RecipeTitle", title);
+                command.ExecuteNonQuery();
+            }
+            finally
+            {
+                connection.Dispose();
+            }
         }
 
         private void DoRemoveContact()
@@ -240,7 +289,7 @@ namespace AddressBook
                 }
                 finally
                 {
-                    Console.WriteLine("THIS will always be printed!");
+                    //Console.WriteLine("THIS will always be printed!");
                 }
             }
         }
