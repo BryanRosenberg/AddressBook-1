@@ -14,7 +14,7 @@ namespace AddressBook
             // Initializations
             _recipes.Add(RecipeType.Appetizers, new List<Recipe>()); //Can add only once
             _recipes[RecipeType.Entrees] = new List<Recipe>(); //Overwrites previous entry
-            _recipes.Add(RecipeType.Desserts, new List<Recipe>()); //Can add only once
+            _recipes.Add(RecipeType.Desserts, new List<Recipe>());
         }
 
         public void DoStuff()
@@ -177,12 +177,14 @@ namespace AddressBook
 
         private void DoSearchEverything()
         {
+            LoadRecipesFromDbToList();
+
             Console.Clear();
             Console.WriteLine("SEARCH EVERYTHING!");
             Console.Write("Please enter a search term: ");
             string term = GetNonEmptyStringFromUser();
 
-            List<IMatchable> matchables = new List<IMatchable>();
+                        List<IMatchable> matchables = new List<IMatchable>();
             matchables.AddRange(_contacts);
             matchables.AddRange(_recipes[RecipeType.Appetizers]);
             matchables.AddRange(_recipes[RecipeType.Entrees]);
@@ -198,6 +200,50 @@ namespace AddressBook
 
             Console.WriteLine("Press Enter to continue...");
             Console.ReadLine();
+        }
+
+        private void LoadRecipesFromDbToList()
+        {
+            _recipes[RecipeType.Appetizers] = new List<Recipe>();
+            _recipes[RecipeType.Entrees] = new List<Recipe>();
+            _recipes[RecipeType.Desserts] = new List<Recipe>();
+
+            string connectionString;
+            connectionString = "Server=LOCALHOST;Database=AddressBook;Trusted_Connection=True;";
+            SqlConnection connection;
+            connection = new SqlConnection(connectionString);
+
+            try
+            {
+                connection.Open();
+
+                SqlCommand command;
+
+                command = connection.CreateCommand();
+                command.CommandText = $@"
+                    SELECT RecipeType, RecipeTitle 
+                      FROM Recipes 
+                     ORDER 
+                        BY RecipeType, RecipeTitle";
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    string type = reader.GetString(0);
+                    string title = reader.GetString(1);
+
+                    //RecipeType choice = (RecipeType);      // Convert enum to number
+                    RecipeType choice = (RecipeType)Enum.Parse(typeof(RecipeType), type);
+                    Recipe recipe = new Recipe(title);
+                    List<Recipe> specificRecipes = _recipes[choice]; // running list
+                    specificRecipes.Add(recipe);
+                }
+            }
+            finally
+            {
+                connection.Dispose();
+            }
         }
 
         private void DoSearchContacts()
