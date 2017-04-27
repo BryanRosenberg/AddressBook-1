@@ -67,16 +67,11 @@ namespace AddressBook
         {
             Console.Clear();
             Console.WriteLine("RECIPES!");
-   
-            string connectionString;
-            connectionString = "Server=LOCALHOST;Database=AddressBook;Trusted_Connection=True;";
-            SqlConnection connection;
-            connection = new SqlConnection(connectionString);
+
+            OpenDatabaseConnection();
 
             try
             {
-                connection.Open();
-
                 SqlCommand command;
 
                 command = connection.CreateCommand();
@@ -117,20 +112,14 @@ namespace AddressBook
             {
                 Console.WriteLine($"{i}. {(RecipeType)i}");
             }
-            //RecipeType choice = (RecipeType)int.Parse(Console.ReadLine());
             string input = Console.ReadLine();
             int num = int.Parse(input);
             RecipeType choice = (RecipeType)num;
 
-            string connectionString;
-            connectionString = "Server=LOCALHOST;Database=AddressBook;Trusted_Connection=True;";
-            SqlConnection connection;
-            connection = new SqlConnection(connectionString);
+            OpenDatabaseConnection();
 
             try
             {
-                connection.Open();
-
                 SqlCommand command;
 
                 command = connection.CreateCommand();
@@ -184,7 +173,7 @@ namespace AddressBook
             Console.Write("Please enter a search term: ");
             string term = GetNonEmptyStringFromUser();
 
-                        List<IMatchable> matchables = new List<IMatchable>();
+            List<IMatchable> matchables = new List<IMatchable>();
             matchables.AddRange(_contacts);
             matchables.AddRange(_recipes[RecipeType.Appetizers]);
             matchables.AddRange(_recipes[RecipeType.Entrees]);
@@ -202,21 +191,25 @@ namespace AddressBook
             Console.ReadLine();
         }
 
+        private void OpenDatabaseConnection()
+        {
+            string connectionString;
+            connectionString = "Server=LOCALHOST;Database=AddressBook;Trusted_Connection=True;";
+            connection = new SqlConnection(connectionString);
+
+            connection.Open();
+        }
+        
         private void LoadRecipesFromDbToList()
         {
             _recipes[RecipeType.Appetizers] = new List<Recipe>();
             _recipes[RecipeType.Entrees] = new List<Recipe>();
             _recipes[RecipeType.Desserts] = new List<Recipe>();
 
-            string connectionString;
-            connectionString = "Server=LOCALHOST;Database=AddressBook;Trusted_Connection=True;";
-            SqlConnection connection;
-            connection = new SqlConnection(connectionString);
+            OpenDatabaseConnection();
 
             try
             {
-                connection.Open();
-
                 SqlCommand command;
 
                 command = connection.CreateCommand();
@@ -233,7 +226,6 @@ namespace AddressBook
                     string type = reader.GetString(0);
                     string title = reader.GetString(1);
 
-                    //RecipeType choice = (RecipeType);      // Convert enum to number
                     RecipeType choice = (RecipeType)Enum.Parse(typeof(RecipeType), type);
                     Recipe recipe = new Recipe(title);
                     List<Recipe> specificRecipes = _recipes[choice]; // running list
@@ -358,7 +350,6 @@ namespace AddressBook
         private void ShowMenu()
         {
             Console.Clear();
-            //Console.WriteLine($"ROLODEX! ({_contacts.Count}) ({_recipes.Count})");
             Console.WriteLine($"ROLODEX! ({_contacts.Count}) ({_recipes.Count})");
             Console.WriteLine("1. Add a person");
             Console.WriteLine("2. Add a company");
@@ -377,5 +368,6 @@ namespace AddressBook
     
         private List<Contact> _contacts;
         private Dictionary<RecipeType, List<Recipe>> _recipes;
+        private SqlConnection connection;
     }
 }
