@@ -14,6 +14,9 @@ namespace AddressBook
         static void Main(string[] args)
         {
             string name = ConfigurationManager.AppSettings["ApplicationName"];
+            string connectionString;
+            connectionString = ConfigurationManager.ConnectionStrings["AddressBook"].ConnectionString;
+
             Console.WriteLine("Welcome to: ");
             Console.WriteLine(name);
             Console.WriteLine(new string('-', Console.WindowWidth - 4));
@@ -21,7 +24,7 @@ namespace AddressBook
             Console.WriteLine("Press enter to continue.");
             Console.ReadLine();
 
-            Rolodex rolodex = new Rolodex();
+            Rolodex rolodex = new Rolodex(connectionString);
             rolodex.DoStuff();
         }
     }

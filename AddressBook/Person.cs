@@ -22,7 +22,7 @@
 
         public override string ToString()
         {
-            return $"{_lastName}, {_firstName} {base.ToString()}";
+            return $"PERSON: {_lastName}, {_firstName} {base.ToString()}";
         }
 
         private string _lastName;
