@@ -9,7 +9,7 @@
         SearchContacts,
         RemoveContact,
         AddRecipe,
-        ListRecipes,
+        ListReceipes,
         SearchEverything,
 
         UPPER_LIMIT

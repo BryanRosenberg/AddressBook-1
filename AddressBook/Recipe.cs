@@ -14,7 +14,7 @@
 
         public override string ToString()
         {
-            return _title;
+            return $"RECIPE: {_title}";
         }
 
         private string _title;

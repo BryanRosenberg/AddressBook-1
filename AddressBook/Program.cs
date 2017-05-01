@@ -1,30 +1,26 @@
 ﻿using System;
 using System.Configuration;
 
-// inside Roledex.cs, 
-// make recipes only go into the datbase.
-// forget the search everything.
-// - add recipes
-// - list recipes
-
 namespace AddressBook
 {
     class Program
     {
         static void Main(string[] args)
         {
-            string name = ConfigurationManager.AppSettings["ApplicationName"];
             string connectionString;
             connectionString = ConfigurationManager.ConnectionStrings["AddressBook"].ConnectionString;
 
-            Console.WriteLine("Welcome to: ");
+            string contactsFileName = ConfigurationManager.AppSettings["ContactsDatabaseFileName"];
+
+            string name = ConfigurationManager.AppSettings["ApplicationName"];
+            Console.WriteLine("WELCOME TO:");
             Console.WriteLine(name);
             Console.WriteLine(new string('-', Console.WindowWidth - 4));
             Console.WriteLine();
-            Console.WriteLine("Press enter to continue.");
+            Console.WriteLine("Press Enter to continue.");
             Console.ReadLine();
 
-            Rolodex rolodex = new Rolodex(connectionString);
+            Rolodex rolodex = new Rolodex(connectionString, contactsFileName);
             rolodex.DoStuff();
         }
     }

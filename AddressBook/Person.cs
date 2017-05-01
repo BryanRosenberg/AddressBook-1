@@ -1,4 +1,6 @@
-﻿namespace AddressBook
+﻿using System;
+
+namespace AddressBook
 {
     public class Person : Contact
     {
@@ -23,6 +25,36 @@
         public override string ToString()
         {
             return $"PERSON: {_lastName}, {_firstName} {base.ToString()}";
+        }
+
+        public string GetFirstName()
+        {
+            return _firstName;
+        }
+
+        public string GetLastName()
+        {
+            return _lastName;
+        }
+
+        public override int CompareTo(Contact other)
+        {
+            Company company = other as Company;
+            if (company != null)
+            {
+                return _lastName.CompareTo(company.GetName());
+            }
+            Person person = other as Person;
+            if (person != null)
+            {
+                int lastNameCompare = _lastName.CompareTo(person.GetLastName());
+                if (lastNameCompare == 0)
+                {
+                    return _firstName.CompareTo(person.GetFirstName());
+                }
+                return lastNameCompare;
+            }
+            return -1;
         }
 
         private string _lastName;
